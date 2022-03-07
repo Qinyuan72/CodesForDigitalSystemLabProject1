@@ -9,6 +9,7 @@
  * Author : ciaran.macnamee
  */
 
+#include <math.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #define THRESHOLD_VOLTAGE 512 /* This is the reading for 2.5V  */
@@ -31,6 +32,34 @@ volatile uint16_t adc_reading; /* Defined as a global here, because it's shared 
 int move_leds_counter = 0;
 uint8_t PORTV = 0x01;
 int derection = 0;
+
+/*
+
+*/
+void movebit(int limit)
+{
+    ++move_leds_counter;
+    if (derection == 0)
+    {
+        PORTV = PORTV << 1;
+        PORTD = PORTV;
+    }
+
+    else
+    {
+        // move the bit right
+        PORTV = PORTV >> 1;
+        PORTD = PORTV;
+    }
+
+    if (move_leds_counter == limit - 1)
+    {
+        move_leds_counter = 0;
+        if (derection == 0)
+            PORTV = 128;//2^(limit-1)
+        derection = ~derection;
+    }
+}
 
 int main(void)
 {
@@ -125,7 +154,7 @@ ISR(TIMER0_OVF_vect)
 {
     TCNT0 = DLY_2_ms;     /*	TCNT0 needs to be set to the start point each time				*/
     ++timecount0;         /* count the number of times the interrupt has been reached			*/
-    if (timecount0 >= 20) /* 5 * 2ms = 10ms									*/
+    if (timecount0 >= 40) /* 5 * 2ms = 10ms									*/
     {
         if ((PINB & 0x20) == 0x20)
         {
@@ -152,37 +181,15 @@ ISR(TIMER0_OVF_vect)
         {
             if ((PINB & 0x10) == 0x10)
             {
-                // PORTD = 0;
+                PORTD = 0;
             }
             else
             {
-                ++move_leds_counter;
-                // printf("PORTV: %i\n", PORTV);
-                // delay(1);
-                timecount0 = 0;
-                if (derection == 0)
-                {
-                    PORTV = PORTV << 1;
-                    PORTD = PORTV;
-                }
-
-                else
-                {
-                    // move right
-                    PORTV = PORTV >> 1;
-                    PORTD = PORTV;
-                }
-
-                if (move_leds_counter == 7)
-                {
-                    move_leds_counter = 0;
-                    if (derection == 0)
-                        PORTV = 128;
-                    derection = ~derection;
-                }
+                movebit(8);
             }
-            timecount0 = 0;
+            
         }
+        timecount0 = 0;
     }
 }
 ISR(ADC_vect) /* handles ADC interrupts  */

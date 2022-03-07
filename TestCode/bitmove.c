@@ -23,7 +23,7 @@ int main(int argc, char const *argv)
     {
         // printf("hello");
         ++move_leds_counter;
-        printf("PORTV: %i   move led: %i   derection:%i\n", PORTV,move_leds_counter,derection);
+        printf("PORTV: %i   move_leds_counter: %i   derection:%i\n", PORTV,move_leds_counter,derection);
         delay(1);
         if (derection == 0)
         {

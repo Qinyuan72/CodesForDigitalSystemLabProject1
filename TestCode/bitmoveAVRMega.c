@@ -6,7 +6,7 @@
  */ 
 
 /* This version of Timer0 Example uses a static local variable for timecount0. Note that static local variables are 
- * initialised to 0 by default, and that they retain their values between invocation */
+ * initialised to 0 by default, and thast they retain their values between invocation */
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -45,11 +45,8 @@ ISR(TIMER0_OVF_vect)
 	
 	if (timecount0 >= 40)	// 40 * 12.5ms = 500ms = 0.5s
 	{
-		PORTD = ~PORTD;		// Toggle all the bits
 		timecount0 = 0;		// Restart the overflow counter
 		        ++move_leds_counter;
-		        //printf("PORTV: %i\n", PORTV);
-		        //delay(1);
 		        if (derection == 0)
 		        {
 			        PORTV = PORTV << 1;
@@ -59,7 +56,7 @@ ISR(TIMER0_OVF_vect)
 
 		        else
 		        {
-			        // move right
+			        // move the bit right
 			        PORTV = PORTV >> 1;
 					PORTD = PORTV;
 		        }
@@ -67,8 +64,8 @@ ISR(TIMER0_OVF_vect)
 		        if (move_leds_counter == 7)
 		        {
 			        move_leds_counter = 0;
+					
 			        derection = ~derection;
-			        //printf("\n", PORTV);
 		        }
 		}
 }
