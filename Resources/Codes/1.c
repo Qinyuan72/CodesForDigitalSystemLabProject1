@@ -30,7 +30,6 @@ volatile uint16_t adc_reading; /* Defined as a global here, because it's shared 
 
 int move_leds_counter = 0;
 uint8_t PORTV = 0x01;
-int derection = 0;
 
 int main(void)
 {
@@ -59,33 +58,33 @@ int main(void)
 
     while (1)
     {
-        if ((PINB & 0x20) == 0x20) ///
+        if ((PINB & 0x20) == 0x20)
         {
             if (new_adc_data_flag)
             {
                 if (adc_reading < ONE_EIGHTH_VOLTAGE)
                 {
-                    //      PORTD = 0x00;
+              //      PORTD = 0x00;
                     PORTD = PORTD & 0x0F;
                 }
                 else if (adc_reading < ONE_QUARTER_VOLTAGE)
                 {
-                    //     PORTD = 0x00;
+               //     PORTD = 0x00;
                     PORTD = PORTD & 0x1F;
                 }
                 else if (adc_reading < THREE_EIGHTH_VOLTAGE)
                 {
-                    //    PORTD = 0x00;
+                //    PORTD = 0x00;
                     PORTD = PORTD & 0x3F;
                 }
                 else if (adc_reading < HALF_VOLTAGE)
                 {
-                    // PORTD = 0x00;
+                   // PORTD = 0x00;
                     PORTD = PORTD & 0x7F;
                 }
                 else
                 {
-                    // PORTD = 0x00;
+                    //PORTD = 0x00;
                     PORTD = PORTD & 0xFF;
                 }
 
@@ -131,12 +130,12 @@ ISR(TIMER0_OVF_vect)
         {
             ++move_leds_counter;
             // PORTD = i;
-            if (move_leds_counter < 4)
+            if (move_leds_counter < 2)
             {
                 PORTV = PORTV << 1;
                 PORTD = PORTD ^ PORTV;
             }
-            else if (move_leds_counter > 6)
+            else if (move_leds_counter > 3)
             {
                 PORTV = 0x01;
                 PORTD = PORTD ^ PORTV;
@@ -153,41 +152,34 @@ ISR(TIMER0_OVF_vect)
             if ((PINB & 0x10) == 0x10)
             {
                 PORTD = 0;
-                move_leds_counter = 0;
             }
             else
             {
                 ++move_leds_counter;
-                // printf("PORTV: %i\n", PORTV);
-                // delay(1);
-                timecount0 = 0;
-                if (derection == 0)
+                // PORTD = i;
+                if (move_leds_counter < 8)
                 {
-                    PORTV = PORTV << 1;
-                    PORTD = PORTV;
+                    PORTD = PORTD << 1;
                 }
-
+                else if (move_leds_counter > 14)
+                {
+                    PORTD = 0x01;
+                    move_leds_counter = 0;
+                }
                 else
                 {
-                    // move right
-                    PORTV = PORTV >> 1;
-                    PORTD = PORTV;
-                }
-
-                if (move_leds_counter == 7)
-                {
-                    move_leds_counter = 0;
-                    derection = ~derection;
-                    // printf("\n", PORTV);
+                    PORTD = PORTD >> 1;
                 }
             }
-            timecount0 = 0;
         }
+        timecount0 = 0;
     }
 }
+
 ISR(ADC_vect) /* handles ADC interrupts  */
 {
     adc_reading = ADC; /* ADC is in Free Running Mode - you don't have to set up anything for
                           the next conversion */
     new_adc_data_flag = 1;
+    
 }
