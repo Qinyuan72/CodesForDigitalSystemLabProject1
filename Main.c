@@ -112,6 +112,14 @@ void ADC_reading_display_half_cylon_half_ADC()
     }
 }
 
+/*
+    Evalueate the ADC value and change the overflow imiter for timecount0.
+    To be finished.
+*/
+void ADC_cylon_speed_control(){
+    //nothing to see here, need to fill this part.
+}
+
 int main(void)
 {
 
@@ -153,7 +161,7 @@ int main(void)
                 }
                 else
                 {
-                    PORTD = PORTD | 0x00;
+                    ADC_cylon_speed_control()
                 }
             }
             new_adc_data_flag = 0;
