@@ -36,7 +36,7 @@ int derection = 0;
 /*
 
 */
-void movebit(int limit)
+void move_bit(int limit,int twoPower)//twoPower = 2^(limit-1)??
 {
     ++move_leds_counter;
     if (derection == 0)
@@ -56,7 +56,7 @@ void movebit(int limit)
     {
         move_leds_counter = 0;
         if (derection == 0)
-            PORTV = 128;//2^(limit-1)
+            PORTV = twoPower; // 2^(limit-1)
         derection = ~derection;
     }
 }
@@ -95,27 +95,27 @@ int main(void)
                 if (adc_reading < ONE_EIGHTH_VOLTAGE)
                 {
                     //      PORTD = 0x00;
-                    PORTD = PORTD & 0x0F;
+                    PORTD = PORTD | 0x00;
                 }
                 else if (adc_reading < ONE_QUARTER_VOLTAGE)
                 {
                     //     PORTD = 0x00;
-                    PORTD = PORTD & 0x1F;
+                    PORTD = PORTD | 0x10;
                 }
                 else if (adc_reading < THREE_EIGHTH_VOLTAGE)
                 {
                     //    PORTD = 0x00;
-                    PORTD = PORTD & 0x3F;
+                    PORTD = PORTD | 0x30;
                 }
                 else if (adc_reading < HALF_VOLTAGE)
                 {
                     // PORTD = 0x00;
-                    PORTD = PORTD & 0x7F;
+                    PORTD = PORTD | 0x70;
                 }
                 else
                 {
                     // PORTD = 0x00;
-                    PORTD = PORTD & 0xFF;
+                    PORTD = PORTD | 0xF0;
                 }
 
                 new_adc_data_flag = 0;
@@ -158,36 +158,14 @@ ISR(TIMER0_OVF_vect)
     {
         if ((PINB & 0x20) == 0x20)
         {
-            ++move_leds_counter;
-            // PORTD = i;
-            if (move_leds_counter < 4)
-            {
-                PORTV = PORTV << 1;
-                PORTD = PORTD ^ PORTV;
-            }
-            else if (move_leds_counter > 6)
-            {
-                PORTV = 0x01;
-                PORTD = PORTD ^ PORTV;
-                move_leds_counter = 0;
-            }
-            else
-            {
-                PORTV = PORTV >> 1;
-                PORTD = PORTD ^ PORTV | 0xF0;
-            }
+            move_bit(4,8);
         }
         else
         {
             if ((PINB & 0x10) == 0x10)
-            {
                 PORTD = 0;
-            }
             else
-            {
-                movebit(8);
-            }
-            
+                move_bit(8,128);
         }
         timecount0 = 0;
     }

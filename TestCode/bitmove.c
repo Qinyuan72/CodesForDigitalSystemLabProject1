@@ -17,7 +17,7 @@ int main(int argc, char const *argv)
 {
     printf("Test1\n");
     int PORTV = 1;
-    int move_leds_counter = 6;
+    int move_leds_counter = 2;
     int derection = 0;
     while (1)
     {
@@ -37,11 +37,11 @@ int main(int argc, char const *argv)
 
         }
 
-        if (move_leds_counter == 7)
+        if (move_leds_counter == 3)
         {
             move_leds_counter = 0;
             if (derection == 0)
-                PORTV = 128;
+                PORTV = 8;
             derection = ~derection;
             printf("----flip derection----\n");
         }
