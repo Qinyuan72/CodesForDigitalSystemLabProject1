@@ -52,7 +52,7 @@ void move_bit(int limit,int twoPower)//twoPower = 2^(limit-1)??
         PORTD = PORTV;
     }
 
-    if (move_leds_counter == limit - 1)
+    if (move_leds_counter >= limit - 1)
     {
         move_leds_counter = 0;
         if (derection == 0)
