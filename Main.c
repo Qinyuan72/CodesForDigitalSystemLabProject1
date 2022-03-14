@@ -6,7 +6,7 @@
  * Created: 3/8/2022 16:38:00
  * 14/02/2022, int8_t used for flag
  * Author : ciaran.macnamee
- * Author : Qinyuan.Liu, Mandisi.Sibanda 
+ * Author : Qinyuan.Liu, Mandisi.Sibanda
  */
 
 #include <math.h>
@@ -116,8 +116,9 @@ void ADC_reading_display_half_cylon_half_ADC()
     Evalueate the ADC value and change the overflow imiter for timecount0.
     To be finished.
 */
-void ADC_cylon_speed_control(){
-    //nothing to see here, need to fill this part.
+void ADC_cylon_speed_control()
+{
+    // nothing to see here, need to fill this part.
 }
 
 int main(void)
@@ -161,7 +162,7 @@ int main(void)
                 }
                 else
                 {
-                    ADC_cylon_speed_control()
+                    ADC_cylon_speed_control();
                 }
             }
             new_adc_data_flag = 0;
