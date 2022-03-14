@@ -86,29 +86,25 @@ void ADC_reading_display_full_ADC()
 */
 void ADC_reading_display_half_cylon_half_ADC()
 {
-    if (adc_reading < ONE_EIGHTH_VOLTAGE)
+    if (adc_reading < ONE_QUARTER_VOLTAGE)
     {
-        //      PORTD = 0x00;
         PORTD = PORTD | 0x00;
-    }
-    else if (adc_reading < ONE_QUARTER_VOLTAGE)
-    {
-        //     PORTD = 0x00;
-        PORTD = PORTD | 0x10;
-    }
-    else if (adc_reading < THREE_EIGHTH_VOLTAGE)
-    {
-        //    PORTD = 0x00;
-        PORTD = PORTD | 0x30;
     }
     else if (adc_reading < HALF_VOLTAGE)
     {
-        // PORTD = 0x00;
+        PORTD = PORTD | 0x10;
+    }
+    else if (adc_reading < THREE_QUARTER_VOLTAGE)
+    {
+        PORTD = PORTD | 0x30;
+    }
+    else if (adc_reading < FULL_SCALE)
+    {
         PORTD = PORTD | 0x70;
     }
     else
     {
-        // PORTD = 0x00;
+
         PORTD = PORTD | 0xF0;
     }
 }
