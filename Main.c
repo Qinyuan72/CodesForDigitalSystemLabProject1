@@ -25,6 +25,7 @@
 #define DLY_2_ms 200
 #define COUNT_FOR_10ms 50
 uint16_t timecount0;
+uint16_t time_rowover = 40;
 
 volatile int8_t new_adc_data_flag;
 volatile uint16_t adc_reading; /* Defined as a global here, because it's shared with main  */
@@ -118,7 +119,10 @@ void ADC_reading_display_half_cylon_half_ADC()
 */
 void ADC_cylon_speed_control()
 {
-    // nothing to see here, need to fill this part.
+    if (adc_reading < HALF_VOLTAGE)
+        time_rowover = 20;
+    else
+        time_rowover = 40;
 }
 
 /*
@@ -146,7 +150,7 @@ void Time_ISR_Declaration(){
 /*
     Decear and configure some registers for PortD & ProtB
 */
-void Time_ISR_Declaration(){
+void PortB_D_Declaration(){
     DDRD = 0b11111111;
     PORTD = 1; /* Initialise PORTD and Clear Bit 7  */
 
@@ -156,6 +160,7 @@ void Time_ISR_Declaration(){
 
 int main(void)
 {
+    PortB_D_Declaration();
     Time_ISR_Declaration();
     ADC_Declaration();
     sei(); // global interrupt enable
@@ -188,7 +193,7 @@ ISR(TIMER0_OVF_vect)
 {
     TCNT0 = DLY_2_ms;     /*	TCNT0 needs to be set to the start point each time				*/
     ++timecount0;         /* count the number of times the interrupt has been reached			*/
-    if (timecount0 >= 40) /* 5 * 2ms = 10ms									*/
+    if (timecount0 >= time_rowover) /* 5 * 2ms = 10ms									*/
     {
         if ((PINB & 0x20) == 0x20)
         {
