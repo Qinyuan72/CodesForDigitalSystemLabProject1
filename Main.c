@@ -121,29 +121,43 @@ void ADC_cylon_speed_control()
     // nothing to see here, need to fill this part.
 }
 
-int main(void)
+/*
+    Desear and configure some registers for ADC
+*/
+void ADC_Declaration()
 {
-
     new_adc_data_flag = 0;
+    ADMUX = ((1 << REFS0) | (0 << ADLAR) | (0 << MUX0));                              /* AVCC selected for VREF, ADC0 as ADC input  */
+    ADCSRA = ((1 << ADEN) | (1 << ADSC) | (1 << ADATE) | (1 << ADIE) | (7 << ADPS0)); // Enable ADC, Start Conversion, Auto Trigger enabled, Interrupt enabled, Prescale = 128
+    ADCSRB = (0 << ADTS0);
+}
 
-    DDRD = 0b11111111;
-    PORTD = 1; /* Initialise PORTD and Clear Bit 7  */
-
-    DDRB = 0b00000000;  /* Set up Port B as all inputs */
-    PORTB = 0b00110000; /* Enable programmable pull ups on Portb Bits 5 & 4 */
-
+/*
+    Decear and configure some registers for Time_ISR
+*/
+void Time_ISR_Declaration(){
     timecount0 = 0;
     TCCR0B = (5 << CS00);
     TCCR0A = 0;
     TCNT0 = DLY_2_ms;
     TIMSK0 = (1 << TOIE0);
+}
 
-    ADMUX = ((1 << REFS0) | (0 << ADLAR) | (0 << MUX0));                              /* AVCC selected for VREF, ADC0 as ADC input  */
-    ADCSRA = ((1 << ADEN) | (1 << ADSC) | (1 << ADATE) | (1 << ADIE) | (7 << ADPS0)); // Enable ADC, Start Conversion, Auto Trigger enabled, Interrupt enabled, Prescale = 128
-    ADCSRB = (0 << ADTS0);                                                            /* Select AutoTrigger Source to Free Running Mode
-                                                                                         Strictly speaking - this is already 0, so we could omit the write to
-                                                                                         ADCSRB, but this is included here so the intent is clear */
+/*
+    Decear and configure some registers for PortD & ProtB
+*/
+void Time_ISR_Declaration(){
+    DDRD = 0b11111111;
+    PORTD = 1; /* Initialise PORTD and Clear Bit 7  */
 
+    DDRB = 0b00000000;  /* Set up Port B as all inputs */
+    PORTB = 0b00110000; /* Enable programmable pull ups on Portb Bits 5 & 4 */
+}
+
+int main(void)
+{
+    Time_ISR_Declaration();
+    ADC_Declaration();
     sei(); // global interrupt enable
 
     while (1)
