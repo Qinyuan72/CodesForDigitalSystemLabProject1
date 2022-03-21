@@ -1,3 +1,4 @@
+Mandisi Sibanda, [3/21/2022 10:58 AM]
 /*
  * Main.c
  *
@@ -21,7 +22,7 @@
 #define FIVE_EIGHTH_VOLTAGE 640
 #define THREE_QUARTER_VOLTAGE 768
 #define SEVEN_EIGHTH_VOLTAGE 896
-
+#define FULL_SCALE 1022
 #define DLY_2_ms 200
 #define COUNT_FOR_10ms 50
 uint16_t timecount0;
@@ -77,6 +78,16 @@ void ADC_reading_display_full_ADC()
         PORTD = PORTD | 0b00000011;
     else if (adc_reading < HALF_VOLTAGE)
         PORTD = PORTD | 0b00000111;
+  else if (adc_reading < FIVE_EIGHTH_VOLTAGE)
+    PORTD = PORTD | 0b00001111;
+  else if (adc_reading < FIVE_EIGHTH_VOLTAGE)
+    PORTD = PORTD | 0b00001111;
+  else if (adc_reading < THREE_QUARTER_VOLTAGE)
+    PORTD = PORTD | 0b00011111;
+  else if (adc_reading < SEVEN_EIGHTH_VOLTAGE)
+    PORTD = PORTD | 0b00111111;
+  else if (adc_reading < FULL_SCALE)
+    PORTD = PORTD | 0b01111111;
     else
         PORTD = 0b11111111;
 }
@@ -118,7 +129,7 @@ void ADC_cylon_speed_control()
     if (adc_reading < HALF_VOLTAGE)
         time_rowover = 20;
     else
-        time_rowover = 40;
+        time_rowover = 80;
 }
 
 /*
@@ -150,7 +161,8 @@ void PortB_D_Declaration(){
     DDRD = 0b11111111;
     PORTD = 1; /* Initialise PORTD and Clear Bit 7  */
 
-    DDRB = 0b00000000;  /* Set up Port B as all inputs */
+Mandisi Sibanda, [3/21/2022 10:58 AM]
+DDRB = 0b00000000;  /* Set up Port B as all inputs */
     PORTB = 0b00110000; /* Enable programmable pull ups on Portb Bits 5 & 4 */
 }
 
@@ -165,6 +177,7 @@ int main(void)
     {
         if (new_adc_data_flag)
         {
+      
             if ((PINB & 0x20) == 0x20) ///
             {
                 ADC_reading_display_half_cylon_half_ADC();
@@ -180,6 +193,7 @@ int main(void)
                     ADC_cylon_speed_control();
                 }
             }
+      
             new_adc_data_flag = 0;
         }
     }
@@ -187,9 +201,9 @@ int main(void)
 
 ISR(TIMER0_OVF_vect)
 {
-    TCNT0 = DLY_2_ms;     /*	TCNT0 needs to be set to the start point each time				*/
-    ++timecount0;         /* count the number of times the interrupt has been reached			*/
-    if (timecount0 >= time_rowover) /* 5 * 2ms = 10ms									*/
+    TCNT0 = DLY_2_ms;     /*  TCNT0 needs to be set to the start point each time        */
+    ++timecount0;         /* count the number of times the interrupt has been reached      */
+    if (timecount0 >= time_rowover) /* 5 * 2ms = 10ms                  */
     {
         if ((PINB & 0x20) == 0x20)
         {
