@@ -6,7 +6,7 @@
  * Created: 3/8/2022 16:38:00
  * 14/02/2022, int8_t used for flag
  * Author : ciaran.macnamee
- * Author : Qinyuan.Liu, Mandisi.Sibanda
+ * Author : Qinyuan.Liu 20137095, Mandisi.Sibanda 20146817
  */
 
 #include <math.h>
