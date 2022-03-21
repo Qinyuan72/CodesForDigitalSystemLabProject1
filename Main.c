@@ -1,4 +1,3 @@
-Mandisi Sibanda, [3/21/2022 10:58 AM]
 /*
  * Main.c
  *
@@ -25,7 +24,7 @@ Mandisi Sibanda, [3/21/2022 10:58 AM]
 #define FULL_SCALE 1022
 #define DLY_2_ms 200
 #define COUNT_FOR_10ms 50
-uint16_t timecount0;
+    uint16_t timecount0;
 uint16_t time_rowover = 40;
 
 volatile int8_t new_adc_data_flag;
@@ -71,23 +70,23 @@ void move_bit(int limit, int twoPower)
 void ADC_reading_display_full_ADC()
 {
     if (adc_reading < ONE_EIGHTH_VOLTAGE)
-        PORTD = PORTD | 0b00000000;
+        PORTD = 0b00000000;
     else if (adc_reading < ONE_QUARTER_VOLTAGE)
-        PORTD = PORTD | 0b00000001;
+        PORTD = 0b00000001;
     else if (adc_reading < THREE_EIGHTH_VOLTAGE)
-        PORTD = PORTD | 0b00000011;
+        PORTD = 0b00000011;
     else if (adc_reading < HALF_VOLTAGE)
-        PORTD = PORTD | 0b00000111;
-  else if (adc_reading < FIVE_EIGHTH_VOLTAGE)
-    PORTD = PORTD | 0b00001111;
-  else if (adc_reading < FIVE_EIGHTH_VOLTAGE)
-    PORTD = PORTD | 0b00001111;
-  else if (adc_reading < THREE_QUARTER_VOLTAGE)
-    PORTD = PORTD | 0b00011111;
-  else if (adc_reading < SEVEN_EIGHTH_VOLTAGE)
-    PORTD = PORTD | 0b00111111;
-  else if (adc_reading < FULL_SCALE)
-    PORTD = PORTD | 0b01111111;
+        PORTD = 0b00000111;
+    else if (adc_reading < FIVE_EIGHTH_VOLTAGE)
+        PORTD = 0b00001111;
+    else if (adc_reading < FIVE_EIGHTH_VOLTAGE)
+        PORTD = 0b00001111;
+    else if (adc_reading < THREE_QUARTER_VOLTAGE)
+        PORTD = 0b00011111;
+    else if (adc_reading < SEVEN_EIGHTH_VOLTAGE)
+        PORTD = 0b00111111;
+    else if (adc_reading < FULL_SCALE)
+        PORTD = 0b01111111;
     else
         PORTD = 0b11111111;
 }
@@ -146,7 +145,8 @@ void ADC_Declaration()
 /*
     Decear and configure some registers for Time_ISR
 */
-void Time_ISR_Declaration(){
+void Time_ISR_Declaration()
+{
     timecount0 = 0;
     TCCR0B = (5 << CS00);
     TCCR0A = 0;
@@ -157,13 +157,13 @@ void Time_ISR_Declaration(){
 /*
     Decear and configure some registers for PortD & ProtB
 */
-void PortB_D_Declaration(){
+void PortB_D_Declaration()
+{
     DDRD = 0b11111111;
     PORTD = 1; /* Initialise PORTD and Clear Bit 7  */
 
-Mandisi Sibanda, [3/21/2022 10:58 AM]
-DDRB = 0b00000000;  /* Set up Port B as all inputs */
-    PORTB = 0b00110000; /* Enable programmable pull ups on Portb Bits 5 & 4 */
+    DDRB = 0b00000000; /* Set up Port B as all inputs */
+    PORTB = 0b00110000;                                          /* Enable programmable pull ups on Portb Bits 5 & 4 */
 }
 
 int main(void)
@@ -177,23 +177,12 @@ int main(void)
     {
         if (new_adc_data_flag)
         {
-      
-            if ((PINB & 0x20) == 0x20) ///
-            {
+            if (PINB == 0b00110000)
+                ADC_cylon_speed_control();
+            if (PINB == 0b00010000)
                 ADC_reading_display_half_cylon_half_ADC();
-            }
-            else
-            {
-                if ((PINB & 0x10) == 0x10)
-                {
-                    ADC_reading_display_full_ADC();
-                }
-                else
-                {
-                    ADC_cylon_speed_control();
-                }
-            }
-      
+            if (PINB == 0b00100000)
+                ADC_reading_display_full_ADC();
             new_adc_data_flag = 0;
         }
     }
@@ -201,21 +190,20 @@ int main(void)
 
 ISR(TIMER0_OVF_vect)
 {
-    TCNT0 = DLY_2_ms;     /*  TCNT0 needs to be set to the start point each time        */
-    ++timecount0;         /* count the number of times the interrupt has been reached      */
+    TCNT0 = DLY_2_ms;               /*  TCNT0 needs to be set to the start point each time        */
+    ++timecount0;                   /* count the number of times the interrupt has been reached      */
     if (timecount0 >= time_rowover) /* 5 * 2ms = 10ms                  */
     {
-        if ((PINB & 0x20) == 0x20)
+        if (PINB == 0b00110000)
         {
+            move_bit(8, 128);
+        }
+        if (PINB == 0b00010000)
             move_bit(4, 8);
-        }
-        else
+        if (PINB == 0b00100000)
         {
-            if ((PINB & 0x10) == 0x10)
-                PORTD = 0;
-            else
-                move_bit(8, 128);
         }
+        new_adc_data_flag = 0;
         timecount0 = 0;
     }
 }
