@@ -22,9 +22,9 @@
 #define THREE_QUARTER_VOLTAGE 768
 #define SEVEN_EIGHTH_VOLTAGE 896
 #define FULL_SCALE 1022
-#define DLY_2_ms 200
+#define DLY_2_ms 61
 #define COUNT_FOR_10ms 50
-    uint16_t timecount0;
+uint16_t timecount0;
 uint16_t time_rowover = 40;
 
 volatile int8_t new_adc_data_flag;
@@ -162,8 +162,8 @@ void PortB_D_Declaration()
     DDRD = 0b11111111;
     PORTD = 1; /* Initialise PORTD and Clear Bit 7  */
 
-    DDRB = 0b00000000; /* Set up Port B as all inputs */
-    PORTB = 0b00110000;                                          /* Enable programmable pull ups on Portb Bits 5 & 4 */
+    DDRB = 0b00000000;  /* Set up Port B as all inputs */
+    PORTB = 0b00110000; /* Enable programmable pull ups on Portb Bits 5 & 4 */
 }
 
 int main(void)
@@ -178,7 +178,8 @@ int main(void)
         if (new_adc_data_flag)
         {
             if (PINB == 0b00110000)
-                ADC_cylon_speed_control();
+            { // do nothing
+            }
             if (PINB == 0b00010000)
                 ADC_reading_display_half_cylon_half_ADC();
             if (PINB == 0b00100000)
@@ -195,9 +196,7 @@ ISR(TIMER0_OVF_vect)
     if (timecount0 >= time_rowover) /* 5 * 2ms = 10ms                  */
     {
         if (PINB == 0b00110000)
-        {
             move_bit(8, 128);
-        }
         if (PINB == 0b00010000)
             move_bit(4, 8);
         if (PINB == 0b00100000)
@@ -211,5 +210,6 @@ ISR(TIMER0_OVF_vect)
 ISR(ADC_vect) /* handles ADC interrupts  */
 {
     adc_reading = ADC; /* ADC is in Free Running Mode - you don't have to set up anything for the next conversion */
+    ADC_cylon_speed_control();
     new_adc_data_flag = 1;
 }
