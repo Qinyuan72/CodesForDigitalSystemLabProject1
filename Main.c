@@ -121,7 +121,6 @@ void ADC_reading_display_half_cylon_half_ADC()
 
 /*
     Evalueate the ADC value and change the overflow imiter for timecount0.
-    To be finished.
 */
 void ADC_cylon_speed_control()
 {
@@ -202,7 +201,6 @@ ISR(TIMER0_OVF_vect)
         if (PINB == 0b00100000)
         {
         }
-        new_adc_data_flag = 0;
         timecount0 = 0;
     }
 }
